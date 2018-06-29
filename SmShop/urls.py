@@ -14,16 +14,41 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.conf.urls import url
+from django.conf.urls import url,include
 import xadmin
 from SmShop.settings import MEDIA_ROOT
 from django.views.static import serve
-from goods.views_base import GoodsListView
+from rest_framework.documentation import include_docs_urls
+from rest_framework.routers import DefaultRouter
+
+# from goods.views_base import GoodsListView
+from goods.views import GoodsListViewSet, GoodsCategoryViewSet, HotWordsViewSet
+from user_operation.views import UserFavViewSet
+
+router = DefaultRouter()
+
+# 配置goods的url
+router.register(r'goods', GoodsListViewSet, base_name='goods')
+# 配置category的url
+router.register(r'categorys', GoodsCategoryViewSet, base_name='categorys')
+
+router.register(r'hotsearchs', HotWordsViewSet, base_name='hotsearchs')
+
+# 配置用户收藏
+router.register(r'userfavs', UserFavViewSet, base_name='userfavs')
+
+# 可以自己将get方法绑定到list
+# goods_list = GoodsListViewSet.as_view({
+#     'get':'list',
+# })
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
     url(r'^xadmin/', xadmin.site.urls),
+    url(r'docs/', include_docs_urls(title='我的平台')), # 文档入口
+    url(r'^api-auth/', include('rest_framework.urls')), # drf登录的配置
     url(r'^media/(?P<path>.*)$', serve, {'document_root':MEDIA_ROOT}),
     # 商品列表页
-    url(r'goods/$', GoodsListView.as_view(), name='goods-list')
+    # url(r'^goods/$', GoodsListView.as_view(), name='goods-list')
+    url(r'^', include(router.urls))
 ]
