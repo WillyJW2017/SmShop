@@ -19,4 +19,4 @@ class GoodsFilter(filters.FilterSet):
     # 实现价格区间的功能
     class Meta:
         model = Goods
-        fields = ['pricemin','pricemax', 'is_hot']
+        fields = ['pricemin','pricemax', 'is_hot', 'is_new']
